@@ -56,8 +56,8 @@ public class HomeActivity extends AppCompatActivity {
 
         View view = navigationView.getHeaderView(0);
 
-        nameTextView = (TextView)view.findViewById(R.id.header_name_textView);
-        emailTextView = (TextView)view.findViewById(R.id.header_email_textView);
+        nameTextView = view.findViewById(R.id.header_name_textView);
+        emailTextView = view.findViewById(R.id.header_email_textView);
 
         nameTextView.setText(auth.getCurrentUser().getDisplayName());
         emailTextView.setText(auth.getCurrentUser().getEmail());
@@ -70,7 +70,6 @@ public class HomeActivity extends AppCompatActivity {
         return true;
     }
 
-    @Override
     public boolean onSupportNavigateUp() {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
