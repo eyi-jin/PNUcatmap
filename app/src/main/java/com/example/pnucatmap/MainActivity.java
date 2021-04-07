@@ -19,7 +19,6 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.ActionCodeSettings;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -38,6 +37,9 @@ public class MainActivity extends AppCompatActivity {
 
     private EditText editTextEmail;
     private EditText editTextPassword;
+    private Button emailLoginBtn;
+    private Button emailSignupBtn;
+
 
     private FirebaseAuth.AuthStateListener mAuthListener;
 
@@ -71,11 +73,28 @@ public class MainActivity extends AppCompatActivity {
         editTextEmail = (EditText) findViewById(R.id.edittext_email);
         editTextPassword = (EditText) findViewById(R.id.edittext_password);
 
-        Button emailLoginBtn = (Button)findViewById(R.id.email_login_btn);
+        emailLoginBtn = (Button)findViewById(R.id.email_login_btn);
+        emailSignupBtn = (Button)findViewById(R.id.email_signup_btn);
+
         emailLoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createAccount(editTextEmail.getText().toString(),editTextPassword.getText().toString());
+                String email = editTextEmail.getText().toString();
+                String password = editTextPassword.getText().toString();
+
+                if(email.length()==0 || password.length()==0){
+                    Toast.makeText(MainActivity.this, "Enter email or password",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                loginUser(email,password);
+            }
+        });
+
+        emailSignupBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this,SignupActivity.class ));
+//                createAccount(editTextEmail.getText().toString(),editTextPassword.getText().toString());
             }
         });
 
@@ -85,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if(user != null) {
                     //User is signed in
-                    Intent intent = new Intent(MainActivity.this,HomeActivity.class);
+                    Intent intent = new Intent(MainActivity.this,HomeActivity2.class);
                     startActivity(intent);
                     finish();
 
@@ -147,35 +166,47 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void signOut() {
-        // [START auth_sign_out]
-        FirebaseAuth.getInstance().signOut();
-        // [END auth_sign_out]
-    }
+//    public void signOut() {
+//        // [START auth_sign_out]
+//        FirebaseAuth.getInstance().signOut();
+//        // [END auth_sign_out]
+//    }
 
-    private void createAccount(String email, String password) {
-        // [START create_user_with_email]
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "createUserWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(MainActivity.this, "회원가입 실패",
-                                    Toast.LENGTH_SHORT).show();
-                            loginUser(email, password);
-                        }
-                    }
-                });
-        // [END create_user_with_email]
-    }
+//    SignupActivity로 옮김
+//    private void createAccount(String email, String password) {
+//        // [START create_user_with_email]
+//        mAuth.createUserWithEmailAndPassword(email, password)
+//                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<AuthResult> task) {
+//                        if (task.isSuccessful()) {
+//                            // Sign in success, update UI with the signed-in user's information
+//                            Toast.makeText(MainActivity.this, "회원가입 성공",
+//                                    Toast.LENGTH_SHORT).show();
+//                            FirebaseUser user = mAuth.getCurrentUser();
+//                            loginUser(email, password);
+//                        } else {
+//                            // If sign in fails, display a message to the user.\
+//                            Toast.makeText(MainActivity.this, "회원가입 실패",
+//                                    Toast.LENGTH_SHORT).show();
+//                        }
+//                    }
+//                });
+//        // [END create_user_with_email]
+//    }
 
     private void reload() { }
+
+
+//    SignInButton googleLoginBtn = (SignInButton) findViewById(R.id.login_button);
+//        googleLoginBtn.setOnClickListener(new View.OnClickListener() {
+//        @Override
+//        public void onClick(View v) {
+//            Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+//            startActivityForResult(signInIntent, RC_SIGN_IN);
+//        }
+//    });
+
 
     private void loginUser(String email, String password) {
         // [START sign_in_with_email]
@@ -184,23 +215,23 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            if(FirebaseAuth.getInstance().getCurrentUser().isEmailVerified()){
-                                startActivity(new Intent(MainActivity.this,HomeActivity.class));
-                            }else{
-                                Toast.makeText(MainActivity.this, "이메일을 다시 한번 확인해주세요",
-                                        Toast.LENGTH_SHORT).show();
-                            }
+                            startActivity(new Intent(MainActivity.this,HomeActivity2.class));
+//                            지금 이해 못하는 코드 전부 주석 처리해둠
+//                             Sign in success, update UI with the signed-in user's information
+//                            if(FirebaseAuth.getInstance().getCurrentUser().isEmailVerified()){
+//                                startActivity(new Intent(MainActivity.this,HomeActivity2.class));
+//                                Toast.makeText(MainActivity.this, "이메일 로그인 성공",
+//                                        Toast.LENGTH_SHORT).show();
+//                            }else{
+//                                Toast.makeText(MainActivity.this, "ID와 PW를 다시 한번 확인해주세요",
+//                                        Toast.LENGTH_SHORT).show();
+//                            }
 
-
-
-                            Log.d(TAG, "signInWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            updateUI(user);
+//                            FirebaseUser user = mAuth.getCurrentUser();
+//                            updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            Toast.makeText(MainActivity.this, "이메일 로그인 완료",
+                            Toast.makeText(MainActivity.this, task.getException().getMessage(),
                                     Toast.LENGTH_SHORT).show();
                             updateUI(null);
                         }
@@ -214,7 +245,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onStart(){
         super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
+
+        // 활동을 초기화할 때 사용자가 현재 로그인되어 있는지 확인합니다.
+        FirebaseUser currentUser = mAuth.getCurrentUser();
     }
 
     @Override
@@ -225,37 +258,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void buildActionCodeSettings() {
-        // [START auth_build_action_code_settings]
-        ActionCodeSettings actionCodeSettings =
-                ActionCodeSettings.newBuilder()
-                        // URL you want to redirect back to. The domain (www.example.com) for this
-                        // URL must be whitelisted in the Firebase Console.
-                        .setUrl("https://www.example.com/finishSignUp?cartId=1234")
-                        // This must be true
-                        .setHandleCodeInApp(true)
-                        .setIOSBundleId("com.example.ios")
-                        .setAndroidPackageName(
-                                "com.example.android",
-                                true, /* installIfNotAvailable */
-                                "12"    /* minimumVersion */)
-                        .build();
-        // [END auth_build_action_code_settings]
-    }
 
-    public void sendSignInLink(String email, ActionCodeSettings actionCodeSettings) {
-        // [START auth_send_sign_in_link]
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        auth.sendSignInLinkToEmail(email, actionCodeSettings)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "Email sent.");
-                        }
-                    }
-                });
-        // [END auth_send_sign_in_link]
-    }
 
 }
