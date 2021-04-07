@@ -19,6 +19,7 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.ActionCodeSettings;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -184,6 +185,15 @@ public class MainActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
+                            if(FirebaseAuth.getInstance().getCurrentUser().isEmailVerified()){
+                                startActivity(new Intent(MainActivity.this,HomeActivity.class));
+                            }else{
+                                Toast.makeText(MainActivity.this, "이메일을 다시 한번 확인해주세요",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+
+
+
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             updateUI(user);
@@ -199,6 +209,8 @@ public class MainActivity extends AppCompatActivity {
         // [END sign_in_with_email]
     }
 
+
+
     @Override
     public void onStart(){
         super.onStart();
@@ -211,6 +223,39 @@ public class MainActivity extends AppCompatActivity {
         if(mAuthListener != null){
             mAuth.removeAuthStateListener(mAuthListener);
         }
+    }
+
+    public void buildActionCodeSettings() {
+        // [START auth_build_action_code_settings]
+        ActionCodeSettings actionCodeSettings =
+                ActionCodeSettings.newBuilder()
+                        // URL you want to redirect back to. The domain (www.example.com) for this
+                        // URL must be whitelisted in the Firebase Console.
+                        .setUrl("https://www.example.com/finishSignUp?cartId=1234")
+                        // This must be true
+                        .setHandleCodeInApp(true)
+                        .setIOSBundleId("com.example.ios")
+                        .setAndroidPackageName(
+                                "com.example.android",
+                                true, /* installIfNotAvailable */
+                                "12"    /* minimumVersion */)
+                        .build();
+        // [END auth_build_action_code_settings]
+    }
+
+    public void sendSignInLink(String email, ActionCodeSettings actionCodeSettings) {
+        // [START auth_send_sign_in_link]
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        auth.sendSignInLinkToEmail(email, actionCodeSettings)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "Email sent.");
+                        }
+                    }
+                });
+        // [END auth_send_sign_in_link]
     }
 
 }
