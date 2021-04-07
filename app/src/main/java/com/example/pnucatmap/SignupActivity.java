@@ -62,10 +62,20 @@ public class SignupActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         progressDialog.hide();
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Toast.makeText(SignupActivity.this, "User registered successfully",
-                                    Toast.LENGTH_SHORT).show();
-//                            FirebaseUser user = firebaseAuth.getCurrentUser();
+
+                            firebaseAuth.getCurrentUser().sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if(task.isSuccessful()){
+                                        Toast.makeText(SignupActivity.this, "User registered successfully. Please verify your email id",
+                                                Toast.LENGTH_SHORT).show();
+                                    }else{
+                                        // If sign in fails, display a message to the user.\
+                                        Toast.makeText(SignupActivity.this, "Failed to register",
+                                                Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
                         } else {
                             // If sign in fails, display a message to the user.\
                             Toast.makeText(SignupActivity.this, "Failed to register",

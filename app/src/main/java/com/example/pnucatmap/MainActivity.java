@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private GoogleSignInClient mGoogleSignInClient;
 
     // [START declare_auth]
-    private FirebaseAuth mAuth;
+    private FirebaseAuth firebaseAuth;
     // [END declare_auth]
 
     private EditText editTextEmail;
@@ -57,9 +57,7 @@ public class MainActivity extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         // [END config_signin]
 
-        // Initialize Firebase Auth
-        mAuth = FirebaseAuth.getInstance();
-        // [END initialize_auth]
+        firebaseAuth = FirebaseAuth.getInstance();
 
         SignInButton googleLoginBtn = (SignInButton) findViewById(R.id.login_button);
         googleLoginBtn.setOnClickListener(new View.OnClickListener() {
@@ -140,14 +138,14 @@ public class MainActivity extends AppCompatActivity {
     // [START auth_with_google]
     private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
-        mAuth.signInWithCredential(credential)
+        firebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
+                            FirebaseUser user = firebaseAuth.getCurrentUser();
                             updateUI(user);
                             Toast.makeText(MainActivity.this, "아이디 생성 완료", Toast.LENGTH_SHORT).show();
                         } else {
@@ -166,11 +164,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-//    public void signOut() {
-//        // [START auth_sign_out]
-//        FirebaseAuth.getInstance().signOut();
-//        // [END auth_sign_out]
-//    }
 
 //    SignupActivity로 옮김
 //    private void createAccount(String email, String password) {
@@ -210,25 +203,16 @@ public class MainActivity extends AppCompatActivity {
 
     private void loginUser(String email, String password) {
         // [START sign_in_with_email]
-        mAuth.signInWithEmailAndPassword(email, password)
+        firebaseAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            startActivity(new Intent(MainActivity.this,HomeActivity2.class));
-//                            지금 이해 못하는 코드 전부 주석 처리해둠
-//                             Sign in success, update UI with the signed-in user's information
-//                            if(FirebaseAuth.getInstance().getCurrentUser().isEmailVerified()){
-//                                startActivity(new Intent(MainActivity.this,HomeActivity2.class));
-//                                Toast.makeText(MainActivity.this, "이메일 로그인 성공",
-//                                        Toast.LENGTH_SHORT).show();
-//                            }else{
-//                                Toast.makeText(MainActivity.this, "ID와 PW를 다시 한번 확인해주세요",
-//                                        Toast.LENGTH_SHORT).show();
-//                            }
-
-//                            FirebaseUser user = mAuth.getCurrentUser();
-//                            updateUI(user);
+                            if(firebaseAuth.getCurrentUser().isEmailVerified()){
+                                startActivity(new Intent(MainActivity.this,HomeActivity2.class));
+                            }else{
+                                Toast.makeText(MainActivity.this, "please verify your email id", Toast.LENGTH_SHORT).show();
+                            }
                         } else {
                             // If sign in fails, display a message to the user.
                             Toast.makeText(MainActivity.this, task.getException().getMessage(),
@@ -247,14 +231,14 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
 
         // 활동을 초기화할 때 사용자가 현재 로그인되어 있는지 확인합니다.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
     }
 
     @Override
     public void onStop(){
         super.onStop();
         if(mAuthListener != null){
-            mAuth.removeAuthStateListener(mAuthListener);
+            firebaseAuth.removeAuthStateListener(mAuthListener);
         }
     }
 
